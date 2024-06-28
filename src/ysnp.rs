@@ -1,4 +1,7 @@
-use std::{fmt::Display, io::ErrorKind, path::PathBuf, str::FromStr};
+use std::fmt;
+use std::io::{Error, ErrorKind};
+use std::path::PathBuf;
+use std::str::FromStr;
 
 use crate::path_utils;
 
@@ -11,6 +14,17 @@ impl YSNP {
     pub fn new() -> YSNP {
         let raw_path = path_utils::get_raw_path();
         YSNP::from_str(&raw_path).unwrap()
+    }
+
+    pub fn add_dir(&mut self, raw_dir: &str) -> Result<&Self, Error> {
+        let p = PathBuf::from(raw_dir);
+
+        if !p.is_dir() {
+            return Err(Error::new(ErrorKind::InvalidInput, "not a dir"));
+        }
+
+        self.dirs.push(p);
+        Ok(self)
     }
 }
 
@@ -28,8 +42,17 @@ impl FromStr for YSNP {
     }
 }
 
-impl Display for YSNP {
+impl fmt::Display for YSNP {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:#?}", self.dirs)
+        println!("dirs: {:#?}", self.dirs);
+        write!(
+            f,
+            "{}",
+            self.dirs
+                .iter()
+                .map(|p| p.to_str().unwrap())
+                .collect::<Vec<&str>>()
+                .join(":")
+        )
     }
 }
