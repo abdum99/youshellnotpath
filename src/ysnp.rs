@@ -1,9 +1,12 @@
+use std::error::Error;
 use std::fmt;
-use std::io::{Error, ErrorKind};
+use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::str::FromStr;
 
 use crate::path_utils;
+
+type YSNPath = PathBuf;
 
 pub struct YSNP {
     dirs: Vec<PathBuf>,
@@ -16,15 +19,31 @@ impl YSNP {
         YSNP::from_str(&raw_path).unwrap()
     }
 
-    pub fn add_dir(&mut self, raw_dir: &str) -> Result<&Self, Error> {
+    pub fn add_dir(&mut self, raw_dir: &str) -> Result<&Self, Box<dyn Error>> {
         let p = PathBuf::from(raw_dir);
 
         if !p.is_dir() {
-            return Err(Error::new(ErrorKind::InvalidInput, "not a dir"));
+            return Err("not a dir".into());
         }
 
         self.dirs.push(p);
+        self.flush();
         Ok(self)
+    }
+
+    pub fn remove_dir(&mut self, to_remove: &PathBuf) -> Result<&Self, Box<dyn Error>> {
+        let idx = self
+            .dirs
+            .iter()
+            .position(|d| d == to_remove)
+            .ok_or("dir not found in path")?;
+        self.dirs.remove(idx);
+        self.flush();
+        Ok(self)
+    }
+
+    pub fn flush(&self) {
+        path_utils::write_raw_path(&format!("{}", self))
     }
 }
 
@@ -43,7 +62,7 @@ impl FromStr for YSNP {
 }
 
 impl fmt::Display for YSNP {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         println!("dirs: {:#?}", self.dirs);
         write!(
             f,
