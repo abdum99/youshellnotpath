@@ -6,10 +6,37 @@ use std::str::FromStr;
 
 use crate::path_utils;
 
-type YSNPath = PathBuf;
+#[derive(Debug)]
+pub enum YSNProblem {
+    Duplicate,
+    IsFile,
+    DirNotExist,
+    DirEmpty,
+}
+
+#[derive(Default, Debug)]
+pub struct YSNPath {
+    buf: PathBuf,
+    problems: Vec<YSNProblem>,
+}
+
+impl From<&str> for YSNPath {
+    fn from(s: &str) -> YSNPath {
+        YSNPath {
+            buf: PathBuf::from(s),
+            ..Default::default()
+        }
+    }
+}
+
+impl PartialEq for YSNPath {
+    fn eq(&self, other: &Self) -> bool {
+        self.buf == other.buf
+    }
+}
 
 pub struct YSNP {
-    dirs: Vec<PathBuf>,
+    dirs: Vec<YSNPath>,
     raw_path: String, // to check if changed during run
 }
 
@@ -19,10 +46,11 @@ impl YSNP {
         YSNP::from_str(&raw_path).unwrap()
     }
 
+    // TODO: A bunch of checks to disallow adding faulty dirs
     pub fn add_dir(&mut self, raw_dir: &str) -> Result<&Self, Box<dyn Error>> {
-        let p = PathBuf::from(raw_dir);
+        let p = YSNPath::from(raw_dir);
 
-        if !p.is_dir() {
+        if !p.buf.is_dir() {
             return Err("not a dir".into());
         }
 
@@ -31,7 +59,7 @@ impl YSNP {
         Ok(self)
     }
 
-    pub fn remove_dir(&mut self, to_remove: &PathBuf) -> Result<&Self, Box<dyn Error>> {
+    pub fn remove_dir(&mut self, to_remove: &YSNPath) -> Result<&Self, Box<dyn Error>> {
         let idx = self
             .dirs
             .iter()
@@ -42,9 +70,14 @@ impl YSNP {
         Ok(self)
     }
 
-    pub fn flush(&self) {
+    pub fn get_problems(&mut self) -> Vec<&YSNPath> {
+        return self.dirs.iter().filter(|p| !p.problems.is_empty()).collect()
+    }
+
+    fn flush(&self) {
         path_utils::write_raw_path(&format!("{}", self))
     }
+
 }
 
 impl FromStr for YSNP {
@@ -53,7 +86,7 @@ impl FromStr for YSNP {
         Ok(YSNP {
             dirs: raw_path
                 .split(":")
-                .map(|dir_s| PathBuf::from(dir_s))
+                .map(|dir_s| YSNPath::from(dir_s))
                 // TODO: .filter(|p| p.is_dir()) (must note these changes and alert user)
                 .collect(),
             raw_path: raw_path.to_string(),
@@ -69,7 +102,7 @@ impl fmt::Display for YSNP {
             "{}",
             self.dirs
                 .iter()
-                .map(|p| p.to_str().unwrap())
+                .map(|p| p.buf.to_str().unwrap())
                 .collect::<Vec<&str>>()
                 .join(":")
         )
