@@ -10,6 +10,8 @@ fn main() {
     let _ = _ysnp.add_dir("/opt").map_err(|e| {
         error!("could not add dir: {}", e);
     });
+    let _tui = tui::Tui{
+        ysnp: &_ysnp
+    };
     tui::run_tui(&_ysnp);
-    println!("Path:\n{}", _ysnp);
 }

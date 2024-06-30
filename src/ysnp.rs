@@ -96,7 +96,6 @@ impl FromStr for YSNP {
 
 impl fmt::Display for YSNP {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        println!("dirs: {:#?}", self.dirs);
         write!(
             f,
             "{}",
