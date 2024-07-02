@@ -16,8 +16,8 @@ pub enum YSNProblem {
 
 #[derive(Default, Debug)]
 pub struct YSNPath {
-    buf: PathBuf,
-    problems: Vec<YSNProblem>,
+    pub buf: PathBuf,
+    pub problems: Vec<YSNProblem>,
 }
 
 impl From<&str> for YSNPath {
@@ -36,7 +36,7 @@ impl PartialEq for YSNPath {
 }
 
 pub struct YSNP {
-    dirs: Vec<YSNPath>,
+    pub dirs: Vec<YSNPath>,
     raw_path: String, // to check if changed during run
 }
 
