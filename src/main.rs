@@ -1,6 +1,6 @@
 pub mod path_utils;
-pub mod ysnp;
 pub mod tui;
+pub mod ysnp;
 
 use log::error;
 use ysnp::YSNP;
@@ -10,8 +10,6 @@ fn main() {
     let _ = _ysnp.add_dir("/opt").map_err(|e| {
         error!("could not add dir: {}", e);
     });
-    let _tui = tui::Tui{
-        ysnp: &_ysnp
-    };
-    tui::run_tui(&_ysnp);
+    let _tui = tui::Tui::new(&_ysnp);
+    _tui.run_tui();
 }

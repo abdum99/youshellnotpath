@@ -71,13 +71,16 @@ impl YSNP {
     }
 
     pub fn get_problems(&mut self) -> Vec<&YSNPath> {
-        return self.dirs.iter().filter(|p| !p.problems.is_empty()).collect()
+        return self
+            .dirs
+            .iter()
+            .filter(|p| !p.problems.is_empty())
+            .collect();
     }
 
     fn flush(&self) {
         path_utils::write_raw_path(&format!("{}", self))
     }
-
 }
 
 impl FromStr for YSNP {

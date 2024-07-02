@@ -5,7 +5,7 @@ pub fn get_raw_path() -> String {
     env::var(PATH_KEY).unwrap_or_else(|_| {
         // TODO:: log this
         env::set_var(PATH_KEY, "");
-        return "".to_string()
+        return "".to_string();
     })
 }
 
