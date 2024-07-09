@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use crate::path_utils;
+use log::debug;
 
 #[derive(Debug)]
 pub enum YSNProblem {
@@ -43,6 +44,7 @@ pub struct YSNP {
 impl YSNP {
     pub fn new() -> YSNP {
         let raw_path = path_utils::get_raw_path();
+        debug!("Creating YSNP from raw_path: {raw_path}");
         YSNP::from_str(&raw_path).unwrap()
     }
 
