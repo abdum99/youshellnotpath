@@ -8,8 +8,8 @@ pub enum YSNProblem {
     DirEmpty,
 }
 
-fn get_problems(path: &str) -> Vec<YSNProblem> {
+fn get_problems(_path: &str) -> Vec<YSNProblem> {
     path_utils::get_raw_path();
     // Check if valid 
-    return vec![];
+    vec![]
 }

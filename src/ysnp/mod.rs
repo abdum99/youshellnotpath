@@ -3,7 +3,6 @@ pub mod ysnp_path;
 
 use crate::path_utils;
 
-pub use ysnp_problem::YSNProblem;
 pub use ysnp_path::YSNPath;
 
 use std::error::Error;
@@ -16,6 +15,12 @@ use log::debug;
 pub struct YSNP {
     pub dirs: Vec<YSNPath>,
     raw_path: String, // to check if changed during run
+}
+
+impl Default for YSNP {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl YSNP {
@@ -67,8 +72,8 @@ impl FromStr for YSNP {
     fn from_str(raw_path: &str) -> Result<Self, ErrorKind> {
         Ok(YSNP {
             dirs: raw_path
-                .split(":")
-                .map(|dir_s| YSNPath::from(dir_s))
+                .split(':')
+                .map(YSNPath::from)
                 // TODO: .filter(|p| p.is_dir()) (must note these changes and alert user)
                 .collect(),
             raw_path: raw_path.to_string(),
