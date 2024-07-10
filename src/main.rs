@@ -1,9 +1,10 @@
 extern crate env_logger;
-pub mod path_utils;
 pub mod tui;
-pub mod ysnp;
+mod ysnp;
+mod utils;
 
 use log::{debug, error};
+use utils::path_utils;
 use ysnp::YSNP;
 
 fn main() {

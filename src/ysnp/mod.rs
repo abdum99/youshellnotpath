@@ -1,40 +1,17 @@
+pub mod ysnp_problem;
+pub mod ysnp_path;
+
+use crate::path_utils;
+
+pub use ysnp_problem::YSNProblem;
+pub use ysnp_path::YSNPath;
+
 use std::error::Error;
 use std::fmt;
 use std::io::ErrorKind;
-use std::path::PathBuf;
 use std::str::FromStr;
-
-use crate::path_utils;
 use log::debug;
 
-#[derive(Debug)]
-pub enum YSNProblem {
-    Duplicate,
-    IsFile,
-    DirNotExist,
-    DirEmpty,
-}
-
-#[derive(Default, Debug)]
-pub struct YSNPath {
-    pub buf: PathBuf,
-    pub problems: Vec<YSNProblem>,
-}
-
-impl From<&str> for YSNPath {
-    fn from(s: &str) -> YSNPath {
-        YSNPath {
-            buf: PathBuf::from(s),
-            ..Default::default()
-        }
-    }
-}
-
-impl PartialEq for YSNPath {
-    fn eq(&self, other: &Self) -> bool {
-        self.buf == other.buf
-    }
-}
 
 pub struct YSNP {
     pub dirs: Vec<YSNPath>,
