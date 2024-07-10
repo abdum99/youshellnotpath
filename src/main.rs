@@ -1,5 +1,5 @@
 extern crate env_logger;
-pub mod tui;
+mod tui;
 mod ysnp;
 mod utils;
 
